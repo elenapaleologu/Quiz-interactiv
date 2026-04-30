@@ -41,7 +41,7 @@ if menu == "Start Quiz":
 
             st.markdown(f"## 🎀 Întrebarea {st.session_state.current + 1}")
 
-            # întrebare card
+            # card întrebare
             st.markdown(f"""
             <div style="
                 padding: 15px;
@@ -70,19 +70,31 @@ if menu == "Start Quiz":
                 else:
                     st.session_state.feedback = "gresit"
 
-            # feedback
+            # ------------------ FEEDBACK CUSTOM ------------------
             if st.session_state.feedback:
 
                 if st.session_state.feedback == "corect":
-                    st.success("🎉 Corect!")
 
-                # 🔥 AICI ESTE MODIFICAREA (fără st.error)
+                    st.markdown("""
+                    <div style="
+                        padding: 12px;
+                        border-radius: 10px;
+                        background-color: #dd4283;
+                        color: black;
+                        font-size: 16px;
+                        box-shadow: 0px 3px 8px rgba(0,0,0,0.2);
+                    ">
+                    🎉 Corect!
+                    </div>
+                    """, unsafe_allow_html=True)
+
                 else:
+
                     st.markdown(f"""
                     <div style="
                         padding: 12px;
                         border-radius: 10px;
-                        background-color:#dd4283;
+                        background-color: #dd4283;
                         color: black;
                         font-size: 16px;
                         box-shadow: 0px 3px 8px rgba(0,0,0,0.2);
@@ -106,7 +118,9 @@ if menu == "Start Quiz":
         else:
             st.success(f"💅 Gata, {name}!")
 
-            st.markdown(f"### Scor final: **{st.session_state.score}/{len(st.session_state.questions)}**")
+            st.markdown(
+                f"### Scor final: **{st.session_state.score}/{len(st.session_state.questions)}**"
+            )
 
             save_score(name, st.session_state.score)
 
