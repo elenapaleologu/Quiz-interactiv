@@ -12,11 +12,11 @@ st.set_page_config(
 
 st.title("🌞 Quiz Master")
 
-# ------------------ STATE ------------------
+
 if "questions" not in st.session_state:
     st.session_state.questions = load_questions()
 
-    # FIX: dacă API-ul nu răspunde
+    
     if not st.session_state.questions:
         st.error("❌ Nu s-au putut încărca întrebările din API.")
         st.stop()
@@ -26,10 +26,10 @@ if "questions" not in st.session_state:
     st.session_state.feedback = None
     st.session_state.finished = False
 
-# ------------------ MENU ------------------
+
 menu = st.sidebar.selectbox("Meniu", ["Start Quiz", "Vezi scoruri"])
 
-# ------------------ QUIZ ------------------
+
 if menu == "Start Quiz":
 
     name = st.text_input("🧚‍♀️ Introdu numele tău")
@@ -65,7 +65,7 @@ if menu == "Start Quiz":
                 key=f"q_{st.session_state.current}"
             )
 
-            # confirm
+           
             if st.button("✔ Confirmă răspunsul"):
 
                 selected_letter = answer.split(".")[0]
@@ -76,7 +76,7 @@ if menu == "Start Quiz":
                 else:
                     st.session_state.feedback = "gresit"
 
-            # ---------------- FEEDBACK ----------------
+            
             if st.session_state.feedback:
 
                 if st.session_state.feedback == "corect":
@@ -142,7 +142,7 @@ if menu == "Start Quiz":
                 st.session_state.clear()
                 st.rerun()
 
-# ---------------- SCORES ----------------
+
 elif menu == "Vezi scoruri":
 
     st.subheader("👑 Leaderboard")
