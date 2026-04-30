@@ -1,8 +1,8 @@
 import streamlit as st
 import json
 import os
-from questions import load_questions
 from scores import save_score
+from questions import load_questions
 
 st.set_page_config(
     page_title="Quiz Master",
@@ -15,6 +15,12 @@ st.title("🌞 Quiz Master")
 # ------------------ STATE ------------------
 if "questions" not in st.session_state:
     st.session_state.questions = load_questions()
+
+    # FIX: dacă API-ul nu răspunde
+    if not st.session_state.questions:
+        st.error("❌ Nu s-au putut încărca întrebările din API.")
+        st.stop()
+
     st.session_state.current = 0
     st.session_state.score = 0
     st.session_state.feedback = None
@@ -30,7 +36,6 @@ if menu == "Start Quiz":
 
     if name:
 
-        # progress bar
         progress = st.session_state.current / len(st.session_state.questions)
         st.progress(progress)
         st.caption(f"Progres: {st.session_state.current}/{len(st.session_state.questions)}")
@@ -41,7 +46,6 @@ if menu == "Start Quiz":
 
             st.markdown(f"## 🎀 Întrebarea {st.session_state.current + 1}")
 
-            # card întrebare
             st.markdown(f"""
             <div style="
                 padding: 15px;
@@ -51,7 +55,7 @@ if menu == "Start Quiz":
                 font-size: 18px;
                 box-shadow: 0px 4px 10px rgba(0,0,0,0.3);
             ">
-             {q['question']}
+            {q['question']}
             </div>
             """, unsafe_allow_html=True)
 
@@ -64,13 +68,15 @@ if menu == "Start Quiz":
             # confirm
             if st.button("✔ Confirmă răspunsul"):
 
-                if answer[0] == q["answer"]:
+                selected_letter = answer.split(".")[0]
+
+                if selected_letter == q["answer"]:
                     st.session_state.score += 1
                     st.session_state.feedback = "corect"
                 else:
                     st.session_state.feedback = "gresit"
 
-            # ------------------ FEEDBACK CUSTOM ------------------
+            # ---------------- FEEDBACK ----------------
             if st.session_state.feedback:
 
                 if st.session_state.feedback == "corect":
@@ -82,7 +88,6 @@ if menu == "Start Quiz":
                         background-color: #dd4283;
                         color: black;
                         font-size: 16px;
-                        box-shadow: 0px 3px 8px rgba(0,0,0,0.2);
                     ">
                     🎉 Corect!
                     </div>
@@ -97,13 +102,11 @@ if menu == "Start Quiz":
                         background-color: #dd4283;
                         color: black;
                         font-size: 16px;
-                        box-shadow: 0px 3px 8px rgba(0,0,0,0.2);
                     ">
                     ❌ Greșit! Răspuns corect: <b>{q['answer']}</b>
                     </div>
                     """, unsafe_allow_html=True)
 
-                # next
                 if st.button("🌷 Următoarea întrebare"):
 
                     st.session_state.current += 1
@@ -114,9 +117,20 @@ if menu == "Start Quiz":
 
                     st.rerun()
 
-        # ------------------ FINAL ------------------
         else:
-            st.success(f"💅 Gata, {name}!")
+            st.markdown(f"""
+            <div style="
+                padding: 15px;
+                border-radius: 12px;
+                background-color: #dd4283;
+                color: black;
+                font-size: 20px;
+                font-weight: bold;
+                text-align: center;
+            ">
+            💅 Gata, {name}!
+            </div>
+            """, unsafe_allow_html=True)
 
             st.markdown(
                 f"### Scor final: **{st.session_state.score}/{len(st.session_state.questions)}**"
@@ -124,11 +138,11 @@ if menu == "Start Quiz":
 
             save_score(name, st.session_state.score)
 
-            if st.button("🔄 Restart quiz"):
+            if st.button("💋 Restart quiz"):
                 st.session_state.clear()
                 st.rerun()
 
-# ------------------ SCORES ------------------
+# ---------------- SCORES ----------------
 elif menu == "Vezi scoruri":
 
     st.subheader("👑 Leaderboard")
